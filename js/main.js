@@ -4,7 +4,7 @@ var BUBBLE = {
 	//set up some values..
 	width: 320,
 	height: 480,
-	
+
 	//populate values later..
 	ratio: null,
 	currentWidth: null,
@@ -37,5 +37,15 @@ var BUBBLE = {
 	},
 	resize: function() {
 
+		this.currentHeight = window.innerHeight;
+
+		//resize width in porportion to the new height..
+		this.currentWidth = this.currentHeight * this.ratio;
+
+
+		//add in extra remove for address bar so we can hide it..
+		if (this.android || this.ios) {
+			document.body.style.height = (window.innerHieght + 50) + 'px';
+		}
 	}
 };
