@@ -67,5 +67,28 @@ BUBBLE = {
 	}
 };
 
+//drawing to the canvas..
+BUBBLE.draw = {
+
+	clear: function() {
+		
+		BUBBLE.cta.clearRect(0, 0, BUBBLE.width, BUBBLE.height);
+	},
+	rect: function(x, y, w, h, col) {
+
+		BUBBLE.ctx.fillStyle = col;
+		BUBBLE.ctx.fillRect(x,y,w,h);
+	},
+	circle: function(x, y, r, col) {
+		
+		BUBBLE.ctx.fillStyle = col;
+		BUBBLE.ctx.beginPath();
+		BUBBLE.ctx.arc(x + 5, y + 5, r, 0, Math.PI * 2, true);
+		BUBBLE.ctx.closePath();
+		BUBBLE.ctx.fill();
+	},
+	
+};
+
 window.addEventListener('load', BUBBLE.init, false);
 window.addEventListener('resize', BUBBLE.resize, false);
