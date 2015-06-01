@@ -1,3 +1,7 @@
-# bubble-tap-game
+# Bubble Tap
 
-HTML5 JavaScript game :)
+HTML5 JavaScript game.
+
+Aim:
+
+Tap bubbles that appear to explode them.
