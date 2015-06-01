@@ -1,12 +1,30 @@
 var BUBBLE = BUBBLE || {};
 
+// http://paulirish.com/2011/requestanimationframe-for-smart-animating
+// shim layer with setTimeout fallback
+window.requestAnimFrame = (function(){
+  return  window.requestAnimationFrame       || 
+          window.webkitRequestAnimationFrame || 
+          window.mozRequestAnimationFrame    || 
+          window.oRequestAnimationFrame      || 
+          window.msRequestAnimationFrame     || 
+          function( callback ){
+            window.setTimeout(callback, 1000 / 60);
+          };
+})();
+
 //add namespace..
 BUBBLE = {
 
 	//set up some values..
 	width: 320,
 	height: 480,
-
+	scale: 1,
+	offset: {
+		top:0,
+		left:0
+	},
+	entities:[], // keeps track of our touches, bubbles, particles etc.
 	//populate values later..
 	ratio: null,
 	currentWidth: null,
@@ -74,6 +92,26 @@ BUBBLE = {
 			e.preventDefault();
 		}, false);
 
+
+		//start game loop..
+		BUBBLE.loop();
+
+	},
+	update: function() {
+
+	},
+	render: function() {
+
+		BUBBLE.draw.clear();
+	},
+	loop: function() {
+
+		requestAnimFrame(BUBBLE.loop);
+
+
+		BUBBLE.update();
+		BUBBLE.render();
+
 	},
 	resize: function() {
 
@@ -90,6 +128,10 @@ BUBBLE = {
 		//set the new canvas size from our initial value of 320x480..
 		BUBBLE.canvas.style.width = BUBBLE.currentWidth + 'px';
 		BUBBLE.canvas.style.height = BUBBLE.currentHeight + 'px';
+
+		BUBBLE.scale = BUBBLE.currentWidth / BUBBLE.width;
+		BUBBLE.offset.top = BUBBLE.canvas.offsetTop;
+		BUBBLE.offset.left = BUBBLE.canvas.offsetLeft;
 
 		window.setTimeout(function() {
 			window.scrollTo(0,1);
@@ -138,13 +180,15 @@ BUBBLE.Input = {
 			scale = BUBBLE.currentWidth / BUBBLE.width;
 
 
-		this.x = (data.pageX - offsetLeft) / scale;
-		this.y = (data.pageY - offsetTop) / scale;
+		this.x = (data.pageX - offsetLeft) / BUBBLE.scale;
+		this.y = (data.pageY - offsetTop) / BUBBLE.scale;
 		this.tapped = true;
 
 		BUBBLE.draw.circle(this.x, this.y, 10, 'red');
 	}
 };
+
+// BUBBLE.touch 
 
 window.addEventListener('load', BUBBLE.init, false);
 window.addEventListener('resize', BUBBLE.resize, false);
