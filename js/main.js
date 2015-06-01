@@ -43,6 +43,36 @@ BUBBLE = {
 		BUBBLE.andriod = BUBBLE.ua.indexOf('android') > -1 ? true : false;
 		BUBBLE.ios = (BUBBLE.ua.indexOf('iphone') > -1 || BUBBLE.ua.indexOf('ipad') > -1) ? true : false;
 
+		//draw some things :)
+		BUBBLE.draw.clear();
+		BUBBLE.draw.rect(120,120,150, 'green');
+		BUBBLE.draw.circle(100,100,50, 'rgba(255,0,0,0.5)');
+		BUBBLE.draw.text('Hello World', 100, 100, 10, '#000');
+
+
+		//detect listen events..
+		window.addEventListener('click', function (e) {
+			e.preventDefault();
+			BUBBLE.Input.set(e);
+		}, false);
+
+		//detect touch events..
+		window.addEventListener('touchstart', function(e){
+			e.preventDefault();
+
+			//get the first touch from the events array called touches..
+			BUBBLE.Input.set(e.touches[0]);
+		}, false);
+
+		window.addEventListener('touchmove', function(e){
+			//just stop default behaviour..
+			e.preventDefault();
+		}, false);
+
+		window.addEventListener('touchend', function(e){
+			//stop default behaviour..
+			e.preventDefault();
+		}, false);
 
 	},
 	resize: function() {
@@ -72,7 +102,7 @@ BUBBLE.draw = {
 
 	clear: function() {
 		
-		BUBBLE.cta.clearRect(0, 0, BUBBLE.width, BUBBLE.height);
+		BUBBLE.ctx.clearRect(0, 0, BUBBLE.width, BUBBLE.height);
 	},
 	rect: function(x, y, w, h, col) {
 
@@ -87,7 +117,33 @@ BUBBLE.draw = {
 		BUBBLE.ctx.closePath();
 		BUBBLE.ctx.fill();
 	},
-	
+	text: function(string, x, y, size, col) {
+
+		BUBBLE.ctx.font = 'bold ' + size + 'px';
+		BUBBLE.ctx.fillSTyle = col;
+		BUBBLE.ctx.fillText(string, x, y);
+	}
+
+};
+
+BUBBLE.Input = {
+
+	x:0,
+	y:0,
+	tapped: false,
+	set: function(data) {
+
+		var offsetTop = BUBBLE.canvas.offsetTop,
+			offsetLeft = BUBBLE.canvas.offsetLeft,
+			scale = BUBBLE.currentWidth / BUBBLE.width;
+
+
+		this.x = (data.pageX - offsetLeft) / scale;
+		this.y = (data.pageY - offsetTop) / scale;
+		this.tapped = true;
+
+		BUBBLE.draw.circle(this.x, this.y, 10, 'red');
+	}
 };
 
 window.addEventListener('load', BUBBLE.init, false);
