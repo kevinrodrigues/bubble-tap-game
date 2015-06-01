@@ -38,6 +38,11 @@ BUBBLE = {
 		BUBBLE.resize();
 
 
+		//detect ios or andriod..
+		BUBBLE.ua = navigator.userAgent.toLowerCase();
+		BUBBLE.andriod = BUBBLE.ua.indexOf('android') > -1 ? true : false;
+		BUBBLE.ios = (BUBBLE.ua.indexOf('iphone') > -1 || BUBBLE.ua.indexOf('ipad') > -1) ? true : false;
+
 
 	},
 	resize: function() {
