@@ -20,6 +20,7 @@ BUBBLE = {
 	width: 320,
 	height: 480,
 	scale: 1,
+	nextBubble: 100,
 	offset: {
 		top:0,
 		left:0
@@ -98,7 +99,11 @@ BUBBLE = {
 
 	},
 	update: function() {
-		var i;
+		var i,
+			checkCollision = false;
+
+		//decrease
+		BUBBLE.nextBubble -= 1;
 
 		//get new instance of Touch if tapped is true..
 		if (BUBBLE.Input.tapped) {
@@ -118,6 +123,16 @@ BUBBLE = {
 			}
 
 		}
+
+		//if the counter is less the zero..
+		if (BUBBLE.nextBubble < 0) {
+			//put a new instance of bubble into our entities array..
+			BUBBLE.entities.push(new BUBBLE.bubble());
+
+			//reset the counter with a random value..
+			BUBBLE.nextBubble = (Math.random() * 100) + 100;
+		}
+
 	},
 	render: function() {
 
@@ -242,9 +257,44 @@ BUBBLE.touch = function(x, y) {
 
 BUBBLE.bubble = function() {
 
-	this.type = 'bubble'
+	this.type = 'bubble';
+	this.x = 100;
+	this.r = 5;
+	this.y = BUBBLE.height + 100; // start off screen.
+	this.remove = false;
+
+	this.update = function() {
+
+		//move up 1px.
+		this.y -= 1;
+
+		//if off screen, flag for removal.
+		if (this.y < -10) {
+			this.remove = true;
+		}
+	};
+
+	this.render = function() {
+		BUBBLE.draw.circle(this.x, this.y, this.r, 'rgba(255,255,255,1)');
+	};
 };
 
+//checks to see if circles overlap..
+BUBBLE.collides = function(a, b) {
+
+	var distanceSquared,
+		radiiSquared;
+
+	distanceSquared = ( ((a.x - b.x) * (a.x - b.x)) + ((a.y - b.y) * (a.y - b.y)));
+
+    radiiSquared = (a.r + b.r) * (a.r + b.r);
+
+    if (distanceSquared < radiiSquared) {
+        return true;
+    } else {
+        return false;
+    }
+};
 
 // BUBBLE.touch();
 window.addEventListener('load', BUBBLE.init, false);
