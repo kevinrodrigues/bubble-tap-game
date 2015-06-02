@@ -100,7 +100,8 @@ BUBBLE = {
 	},
 	update: function() {
 		var i,
-			checkCollision = false;
+			checkCollision = false, // check for collisions if user tapped game.
+			hit;
 
 		//decrease
 		BUBBLE.nextBubble -= 1;
@@ -131,6 +132,30 @@ BUBBLE = {
 
 			//reset the counter with a random value..
 			BUBBLE.nextBubble = (Math.random() * 100) + 100;
+		}
+
+		if (BUBBLE.Input.tapped) {
+
+			BUBBLE.entities.push(new BUBBLE.touch(BUBBLE.Input.x, BUBBLE.Input.y));
+
+			//set tapped back to false to avoid  spawning a new touch.
+			BUBBLE.Input.tabbed = false;
+			checkCollision = true;
+		}
+
+
+		for (i = 0; i < BUBBLE.entities.length; i ++) {
+			BUBBLE.entities[i].update();
+
+			if (BUBBLE.entities[i].type === 'bubble' && checkCollision) {
+				hit = BUBBLE.collides(BUBBLE.entities[i], {x: BUBBLE.Input.x, y: BUBBLE.Input.y, r: 7});
+				BUBBLE.entities[i].remove = hit;
+			}
+
+			//delete from array if set to true;
+			if (BUBBLE.entities[i].remove) {
+				BUBBLE.entities.splice(i, 1);
+			}
 		}
 
 	},
@@ -258,9 +283,13 @@ BUBBLE.touch = function(x, y) {
 BUBBLE.bubble = function() {
 
 	this.type = 'bubble';
-	this.x = 100;
-	this.r = 5;
-	this.y = BUBBLE.height + 100; // start off screen.
+	this.r = (Math.random() * 20) + 10;
+	this.speed = (Math.random() * 3) + 1;
+
+	this.x = (Math.random() * (BUBBLE.width) - this.r);
+	this.y = BUBBLE.height + (Math.random() * 100) + 100; // start off screen.
+
+	
 	this.remove = false;
 
 	this.update = function() {
@@ -279,7 +308,8 @@ BUBBLE.bubble = function() {
 	};
 };
 
-//checks to see if circles overlap..
+//checks to see if circles overlap from...
+//http://mathworld.wolfram.com/Circle-CircleIntersection.html
 BUBBLE.collides = function(a, b) {
 
 	var distanceSquared,
