@@ -179,6 +179,7 @@ BUBBLE.Input = {
 			offsetLeft = BUBBLE.canvas.offsetLeft,
 			scale = BUBBLE.currentWidth / BUBBLE.width;
 
+		console.log('input' + this);
 
 		this.x = (data.pageX - offsetLeft) / BUBBLE.scale;
 		this.y = (data.pageY - offsetTop) / BUBBLE.scale;
@@ -188,7 +189,12 @@ BUBBLE.Input = {
 	}
 };
 
-// BUBBLE.touch 
+//draws circles, fades it out and removes them..
+BUBBLE.touch = function(x,y) {
+	console.log(this);
+};
 
+
+BUBBLE.touch();
 window.addEventListener('load', BUBBLE.init, false);
 window.addEventListener('resize', BUBBLE.resize, false);
