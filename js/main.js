@@ -98,11 +98,37 @@ BUBBLE = {
 
 	},
 	update: function() {
+		var i;
 
+		//get new instance of Touch if tapped is true..
+		if (BUBBLE.Input.tapped) {
+			BUBBLE.entities.push(new BUBBLE.touch(BUBBLE.Input.x, BUBBLE.Input.y));
+
+			//update tab to false so we can cycle back..
+			BUBBLE.Input.tabbed = false;
+		}
+
+		//loop through all entities and update..
+		for (i = 0; i < BUBBLE.entities.length; i++) {
+			BUBBLE.entities[i].update();
+
+			//delete from array if flag is true..
+			if (BUBBLE.entities[i].remove) {
+				BUBBLE.entities.splice(i, 1);
+			}
+
+		}
 	},
 	render: function() {
 
-		BUBBLE.draw.clear();
+		var i;
+
+		BUBBLE.draw.rect(0, 0, BUBBLE.width, BUBBLE.height, '#036');
+
+		for (i = 0; i < BUBBLE.entities.length; i++) {
+			BUBBLE.entities[i].render();
+		}
+
 	},
 	loop: function() {
 
@@ -179,7 +205,7 @@ BUBBLE.Input = {
 			offsetLeft = BUBBLE.canvas.offsetLeft,
 			scale = BUBBLE.currentWidth / BUBBLE.width;
 
-		console.log('input' + this);
+		// console.log('input' + this);
 
 		this.x = (data.pageX - offsetLeft) / BUBBLE.scale;
 		this.y = (data.pageY - offsetTop) / BUBBLE.scale;
@@ -190,11 +216,36 @@ BUBBLE.Input = {
 };
 
 //draws circles, fades it out and removes them..
-BUBBLE.touch = function(x,y) {
-	console.log(this);
+BUBBLE.touch = function(x, y) {
+	// console.log(this);
+
+	this.type = 'touch'; //require this later.
+	this.x = x; //the x coordinate.
+	this.y = y; //the y coordinate.
+	this.r = 5; //radius.
+	this.opacity = 1; //initial start value.
+	this.fade = 0.05; // fade value rate.
+	this.remove = false; // flag for removing this entity.
+
+	// console.log(this);
+
+	this.update = function() {
+		this.opacity -= this.fade;
+		//if its less then 0 then remove it.
+		this.remove = (this.opacity < 0) ? true : false;
+	};
+
+	this.render = function() {
+		BUBBLE.draw.circle(this.x, this.y, this.r, 'rgba(255,0,0' + this.opacity + ')');
+	};
+};
+
+BUBBLE.bubble = function() {
+
+	this.type = 'bubble'
 };
 
 
-BUBBLE.touch();
+// BUBBLE.touch();
 window.addEventListener('load', BUBBLE.init, false);
 window.addEventListener('resize', BUBBLE.resize, false);
