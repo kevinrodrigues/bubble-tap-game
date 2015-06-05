@@ -25,6 +25,12 @@ BUBBLE = {
 		top:0,
 		left:0
 	},
+	score: {
+		taps:0,
+		hit:0,
+		escaped: 0,
+		accuracy:0
+	},
 	entities:[], // keeps track of our touches, bubbles, particles etc.
 	//populate values later..
 	ratio: null,
@@ -106,12 +112,19 @@ BUBBLE = {
 		//decrease
 		BUBBLE.nextBubble -= 1;
 
+
+
+
 		//get new instance of Touch if tapped is true..
 		if (BUBBLE.Input.tapped) {
+
+			BUBBLE.score.taps += 1;
 			BUBBLE.entities.push(new BUBBLE.touch(BUBBLE.Input.x, BUBBLE.Input.y));
 
 			//update tab to false so we can cycle back..
 			BUBBLE.Input.tabbed = false;
+			checkCollision = true;
+
 		}
 
 		//loop through all entities and update..
@@ -125,6 +138,10 @@ BUBBLE = {
 
 		}
 
+		if (BUBBLE.time <= 0) {
+			console.log('game over');
+		}
+
 		//if the counter is less the zero..
 		if (BUBBLE.nextBubble < 0) {
 			//put a new instance of bubble into our entities array..
@@ -134,15 +151,6 @@ BUBBLE = {
 			BUBBLE.nextBubble = (Math.random() * 100) + 100;
 		}
 
-		if (BUBBLE.Input.tapped) {
-
-			BUBBLE.entities.push(new BUBBLE.touch(BUBBLE.Input.x, BUBBLE.Input.y));
-
-			//set tapped back to false to avoid  spawning a new touch.
-			BUBBLE.Input.tabbed = false;
-			checkCollision = true;
-		}
-
 
 		for (i = 0; i < BUBBLE.entities.length; i ++) {
 			BUBBLE.entities[i].update();
@@ -150,6 +158,11 @@ BUBBLE = {
 			if (BUBBLE.entities[i].type === 'bubble' && checkCollision) {
 				hit = BUBBLE.collides(BUBBLE.entities[i], {x: BUBBLE.Input.x, y: BUBBLE.Input.y, r: 7});
 				BUBBLE.entities[i].remove = hit;
+
+				if (hit) {
+					BUBBLE.score.hit += 1;
+					console.log(BUBBLE.score.hit);
+				}
 			}
 
 			//delete from array if set to true;
@@ -157,6 +170,11 @@ BUBBLE = {
 				BUBBLE.entities.splice(i, 1);
 			}
 		}
+
+		BUBBLE.score.accuracy = (BUBBLE.score.hit / BUBBLE.score.taps) * 100;
+		BUBBLE.score.accuracy = isNaN(BUBBLE.score.accuracy) ? 0 : ~~(BUBBLE.score.accuracy);
+
+
 
 	},
 	render: function() {
@@ -168,6 +186,10 @@ BUBBLE = {
 		for (i = 0; i < BUBBLE.entities.length; i++) {
 			BUBBLE.entities[i].render();
 		}
+
+		BUBBLE.draw.text('Hit: ' + BUBBLE.score.hit, 20, 30, 14, '#fff');
+		BUBBLE.draw.text('Escaped: ' + BUBBLE.score.escaped, 20, 50, 14, '#fff');
+		BUBBLE.draw.text('Accuracy: ' + BUBBLE.score.accuracy + '%', 20, 70, 14, '#fff');
 
 	},
 	loop: function() {
@@ -299,7 +321,9 @@ BUBBLE.bubble = function() {
 
 		//if off screen, flag for removal.
 		if (this.y < -10) {
+			BUBBLE.score.escaped += 1; //update score if bubble escapes.
 			this.remove = true;
+			console.log(BUBBLE.score.escaped);
 		}
 	};
 
